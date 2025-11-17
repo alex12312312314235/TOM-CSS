@@ -2,7 +2,7 @@ import React from 'react';
 
 export default function GovernanceIcon() {
   return (
-    <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg width="128" height="128" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
       <rect x="20" y="10" width="24" height="10" stroke="#D22B2B" strokeWidth="2" rx="2" />
       <rect x="20" y="27" width="24" height="10" stroke="#D22B2B" strokeWidth="2" rx="2" />
       <rect x="20" y="44" width="24" height="10" stroke="#D22B2B" strokeWidth="2" rx="2" />

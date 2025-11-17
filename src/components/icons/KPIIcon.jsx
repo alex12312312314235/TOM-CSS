@@ -2,7 +2,7 @@ import React from 'react';
 
 export default function KPIIcon() {
   return (
-    <svg width="80" height="64" viewBox="0 0 80 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg width="160" height="128" viewBox="0 0 80 64" fill="none" xmlns="http://www.w3.org/2000/svg">
       <rect x="12" y="36" width="12" height="16" fill="#D22B2B" rx="2" />
       <rect x="28" y="28" width="12" height="24" fill="#C9A45B" rx="2" />
       <rect x="44" y="20" width="12" height="32" fill="#4CAF50" rx="2" />

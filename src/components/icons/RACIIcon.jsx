@@ -2,7 +2,7 @@ import React from 'react';
 
 export default function RACIIcon() {
   return (
-    <svg width="80" height="64" viewBox="0 0 80 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg width="160" height="128" viewBox="0 0 80 64" fill="none" xmlns="http://www.w3.org/2000/svg">
       <rect x="8" y="24" width="12" height="32" stroke="#D22B2B" strokeWidth="2" rx="2" />
       <rect x="26" y="24" width="12" height="32" stroke="#C9A45B" strokeWidth="2" rx="2" />
       <rect x="44" y="24" width="12" height="32" stroke="#D22B2B" strokeWidth="2" rx="2" />

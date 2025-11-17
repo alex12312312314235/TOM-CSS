@@ -2,7 +2,7 @@ import React from 'react';
 
 export default function ValueChainIcon() {
   return (
-    <svg width="100" height="64" viewBox="0 0 100 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg width="200" height="128" viewBox="0 0 100 64" fill="none" xmlns="http://www.w3.org/2000/svg">
       <rect x="4" y="26" width="16" height="12" stroke="#C9A45B" strokeWidth="2" rx="2" />
       <rect x="32" y="26" width="16" height="12" stroke="#C9A45B" strokeWidth="2" rx="2" />
       <rect x="60" y="26" width="16" height="12" stroke="#C9A45B" strokeWidth="2" rx="2" />

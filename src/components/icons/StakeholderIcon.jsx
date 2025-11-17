@@ -2,7 +2,7 @@ import React from 'react';
 
 export default function StakeholderIcon() {
   return (
-    <svg width="80" height="64" viewBox="0 0 80 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg width="160" height="128" viewBox="0 0 80 64" fill="none" xmlns="http://www.w3.org/2000/svg">
       <circle cx="40" cy="32" r="8" fill="#D22B2B" />
       <circle cx="12" cy="16" r="6" stroke="#C9A45B" strokeWidth="2" />
       <circle cx="68" cy="16" r="6" stroke="#C9A45B" strokeWidth="2" />
