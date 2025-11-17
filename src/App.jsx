@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Home } from 'lucide-react';
-import ProgressBar from './components/shared/ProgressBar';
+import StepSidebar from './components/shared/StepSidebar';
 
 // Import all wizard steps
 import Step1Department from './components/WizardSteps/Step1Department';
@@ -18,6 +18,21 @@ import Step12Opportunities from './components/WizardSteps/Step12Opportunities';
 import Step13Summary from './components/WizardSteps/Step13Summary';
 
 const TOTAL_STEPS = 13;
+
+const STEP_INFO = {
+  1: "Your department name and basic details help identify your team in the organization. Think of this as your team's nameplate.",
+  2: "Your purpose statement is your team's reason for existing. It answers: \"Why are we here?\" Keep it simple and honest - no buzzwords needed.",
+  3: "Your services are what you deliver to others. Each service should be something that someone requests or depends on. Examples: \"Monthly Financial Reports,\" \"Payroll Processing,\" \"IT Support Tickets.\"",
+  4: "Stakeholders are the people and teams you interact with. This includes customers (who use your services), partners (who you work with), suppliers (who provide to you), and leadership (who you report to).",
+  5: "The value chain shows how your team creates value. Inputs = what you receive, Activities = what you do, Outputs = what you deliver.",
+  6: "SLAs are your commitments to customers. They set clear expectations about speed and quality. Example: \"We'll respond to IT tickets within 4 hours\" or \"Invoices processed within 2 days.\"",
+  7: "KPIs are the vital signs of your team. They tell you if you're healthy and performing well. Pick 3-7 metrics that really matter - not everything you could measure, just what you should measure.",
+  8: "RACI stands for: R = Responsible (does the work), A = Accountable (approves, one only!), C = Consulted (input needed before), I = Informed (told after).",
+  9: "Governance is about how your team makes decisions and stays aligned. This includes regular meetings, who decides what, and how problems get escalated.",
+  10: "Dependencies are things you need but don't control. If they fail, your work stops or slows down. This could be IT systems, data from other teams, external suppliers, or specific people.",
+  11: "Risks are potential problems that haven't happened yet (or happen sometimes). Pain points are current problems you're dealing with. Being honest about these helps you plan mitigations and improvements.",
+  12: "Opportunities are ways to improve your team's performance, efficiency, or quality. These could be process improvements, automation ideas, new tools, training needs, or restructuring work."
+};
 
 function App() {
   const [currentStep, setCurrentStep] = useState(1);
@@ -144,18 +159,18 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-ekfc-cream">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-10 shadow-sm">
-        <div className="max-w-5xl mx-auto px-6 py-4">
+      <header className="bg-white border-b-4 border-ekfc-red sticky top-0 z-10 shadow-sm">
+        <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">TOM Builder Wizard</h1>
+              <h1 className="text-2xl font-bold text-ekfc-red">TOM Builder Wizard</h1>
               <p className="text-sm text-gray-600">Build your Target Operating Model step by step</p>
             </div>
             <button
               onClick={handleStartOver}
-              className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900"
+              className="flex items-center gap-2 text-sm text-gray-600 hover:text-ekfc-red transition-colors"
             >
               <Home className="w-4 h-4" />
               Start Over
@@ -164,52 +179,65 @@ function App() {
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="max-w-5xl mx-auto px-6 py-8">
-        <ProgressBar currentStep={currentStep} totalSteps={TOTAL_STEPS} />
-
-        {/* Step Content */}
-        <div className="card mb-8">
-          {renderStep()}
-        </div>
-
-        {/* Navigation Buttons */}
-        <div className="flex items-center justify-between">
-          <button
-            onClick={handleBack}
-            disabled={currentStep === 1}
-            className="btn-secondary flex items-center gap-2"
-          >
-            <ChevronLeft className="w-4 h-4" />
-            Back
-          </button>
-
-          {currentStep < TOTAL_STEPS ? (
-            <button
-              onClick={handleNext}
-              className="btn-primary flex items-center gap-2"
-            >
-              Next
-              <ChevronRight className="w-4 h-4" />
-            </button>
-          ) : (
-            <div className="text-sm text-gray-600 font-medium">
-              You've completed the wizard! 🎉
+      {/* Main Content - Two Column Layout */}
+      <main className="max-w-7xl mx-auto px-6 py-8">
+        <div className="flex flex-col lg:flex-row gap-6">
+          {/* Left Column - Main Content */}
+          <div className="flex-1 min-w-0">
+            {/* Step Content */}
+            <div className="card mb-6">
+              {renderStep()}
             </div>
-          )}
-        </div>
 
-        {/* Auto-save indicator */}
-        <div className="mt-6 text-center">
-          <p className="text-xs text-gray-500">
-            ✓ Your progress is automatically saved to your browser
-          </p>
+            {/* Navigation Buttons */}
+            <div className="flex items-center justify-between">
+              <button
+                onClick={handleBack}
+                disabled={currentStep === 1}
+                className="btn-secondary flex items-center gap-2"
+              >
+                <ChevronLeft className="w-4 h-4" />
+                Back
+              </button>
+
+              {currentStep < TOTAL_STEPS ? (
+                <button
+                  onClick={handleNext}
+                  className="btn-primary flex items-center gap-2"
+                >
+                  Next
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              ) : (
+                <div className="text-sm text-gray-600 font-medium">
+                  You've completed the wizard! 🎉
+                </div>
+              )}
+            </div>
+
+            {/* Auto-save indicator */}
+            <div className="mt-4 text-center">
+              <p className="text-xs text-gray-500">
+                ✓ Your progress is automatically saved to your browser
+              </p>
+            </div>
+          </div>
+
+          {/* Right Column - Sidebar */}
+          <div className="lg:w-80 flex-shrink-0">
+            <div className="lg:sticky lg:top-24">
+              <StepSidebar
+                currentStep={currentStep}
+                infoContent={STEP_INFO[currentStep]}
+              />
+            </div>
+          </div>
         </div>
       </main>
 
       {/* Footer */}
       <footer className="bg-white border-t border-gray-200 mt-12">
-        <div className="max-w-5xl mx-auto px-6 py-6 text-center text-sm text-gray-600">
+        <div className="max-w-7xl mx-auto px-6 py-6 text-center text-sm text-gray-600">
           <p>TOM Builder Wizard for CSS (Culinary Shared Services)</p>
           <p className="mt-1">Built to help teams define their Target Operating Model with clarity and simplicity</p>
         </div>
