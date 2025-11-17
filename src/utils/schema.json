@@ -1,0 +1,203 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Target Operating Model Schema",
+  "type": "object",
+  "properties": {
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "createdDate": { "type": "string", "format": "date-time" },
+        "lastModified": { "type": "string", "format": "date-time" },
+        "version": { "type": "string" },
+        "author": { "type": "string" }
+      }
+    },
+    "department": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "division": { "type": "string" },
+        "headcount": { "type": "number" }
+      },
+      "required": ["name"]
+    },
+    "purpose": {
+      "type": "object",
+      "properties": {
+        "statement": { "type": "string" },
+        "vision": { "type": "string" },
+        "mission": { "type": "string" }
+      },
+      "required": ["statement"]
+    },
+    "serviceCatalogue": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "serviceName": { "type": "string" },
+          "description": { "type": "string" },
+          "type": { "type": "string", "enum": ["Core", "Support", "Strategic"] },
+          "frequency": { "type": "string" }
+        },
+        "required": ["serviceName", "type"]
+      }
+    },
+    "stakeholders": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "role": { "type": "string" },
+          "relationship": { "type": "string", "enum": ["Internal Customer", "External Customer", "Partner", "Supplier", "Leadership"] },
+          "expectations": { "type": "string" }
+        },
+        "required": ["name", "relationship"]
+      }
+    },
+    "valueChain": {
+      "type": "object",
+      "properties": {
+        "inputs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "source": { "type": "string" },
+              "frequency": { "type": "string" }
+            }
+          }
+        },
+        "activities": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "description": { "type": "string" },
+              "owner": { "type": "string" },
+              "criticality": { "type": "string", "enum": ["High", "Medium", "Low"] }
+            }
+          }
+        },
+        "outputs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "recipient": { "type": "string" },
+              "quality": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "slas": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "service": { "type": "string" },
+          "metric": { "type": "string" },
+          "target": { "type": "string" },
+          "measurement": { "type": "string" }
+        },
+        "required": ["service", "metric", "target"]
+      }
+    },
+    "kpis": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "target": { "type": "string" },
+          "frequency": { "type": "string" },
+          "owner": { "type": "string" },
+          "category": { "type": "string", "enum": ["Quality", "Speed", "Cost", "Customer Satisfaction", "Compliance"] }
+        },
+        "required": ["name", "target", "category"]
+      }
+    },
+    "raci": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "activity": { "type": "string" },
+          "responsible": { "type": "array", "items": { "type": "string" } },
+          "accountable": { "type": "string" },
+          "consulted": { "type": "array", "items": { "type": "string" } },
+          "informed": { "type": "array", "items": { "type": "string" } }
+        },
+        "required": ["activity", "accountable"]
+      }
+    },
+    "governance": {
+      "type": "object",
+      "properties": {
+        "forums": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "purpose": { "type": "string" },
+              "frequency": { "type": "string" },
+              "participants": { "type": "array", "items": { "type": "string" } },
+              "decisions": { "type": "array", "items": { "type": "string" } }
+            }
+          }
+        },
+        "escalationPath": { "type": "string" },
+        "decisionRights": { "type": "string" }
+      }
+    },
+    "dependencies": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "on": { "type": "string" },
+          "type": { "type": "string", "enum": ["System", "Team", "Process", "Data", "External"] },
+          "criticality": { "type": "string", "enum": ["High", "Medium", "Low"] },
+          "impact": { "type": "string" }
+        },
+        "required": ["on", "type"]
+      }
+    },
+    "risks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "description": { "type": "string" },
+          "type": { "type": "string", "enum": ["Operational", "Financial", "Compliance", "Reputational", "Strategic"] },
+          "likelihood": { "type": "string", "enum": ["High", "Medium", "Low"] },
+          "impact": { "type": "string", "enum": ["High", "Medium", "Low"] },
+          "mitigation": { "type": "string" }
+        },
+        "required": ["description", "type"]
+      }
+    },
+    "opportunities": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "description": { "type": "string" },
+          "type": { "type": "string", "enum": ["Efficiency", "Quality", "Growth", "Innovation", "Cost Reduction"] },
+          "effort": { "type": "string", "enum": ["High", "Medium", "Low"] },
+          "impact": { "type": "string", "enum": ["High", "Medium", "Low"] },
+          "timeframe": { "type": "string" }
+        },
+        "required": ["description", "type"]
+      }
+    }
+  },
+  "required": ["department", "purpose"]
+}
