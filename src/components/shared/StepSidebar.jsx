@@ -18,7 +18,7 @@ const STEP_NAMES = [
   'Summary & Export'
 ];
 
-export default function StepSidebar({ currentStep, infoContent }) {
+export default function StepSidebar({ currentStep, infoContent, onStepChange }) {
   return (
     <div className="space-y-6">
       {/* Progress List */}
@@ -34,13 +34,15 @@ export default function StepSidebar({ currentStep, infoContent }) {
             const isPending = stepNumber > currentStep;
 
             return (
-              <div
+              <button
                 key={stepNumber}
+                onClick={() => onStepChange(stepNumber)}
                 className={`
-                  flex items-center gap-3 px-3 py-2 rounded-md transition-colors text-sm
+                  w-full flex items-center gap-3 px-3 py-2 rounded-md transition-colors text-sm text-left
                   ${isCurrent ? 'bg-ekfc-red text-white font-medium' : ''}
-                  ${isCompleted ? 'text-ekfc-gold' : ''}
-                  ${isPending ? 'text-gray-400' : ''}
+                  ${isCompleted ? 'text-ekfc-gold hover:bg-amber-50' : ''}
+                  ${isPending ? 'text-gray-400 hover:bg-gray-50' : ''}
+                  ${!isCurrent ? 'cursor-pointer' : 'cursor-default'}
                 `}
               >
                 <div className={`
@@ -52,7 +54,7 @@ export default function StepSidebar({ currentStep, infoContent }) {
                   {isCompleted ? <Check className="w-3 h-3" /> : stepNumber}
                 </div>
                 <span className="flex-1 truncate">{name}</span>
-              </div>
+              </button>
             );
           })}
         </div>

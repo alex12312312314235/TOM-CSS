@@ -87,6 +87,11 @@ function App() {
     }
   };
 
+  const handleStepChange = (stepNumber) => {
+    setCurrentStep(stepNumber);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const handleDataChange = (field, value) => {
     setTomData(prev => ({
       ...prev,
@@ -229,6 +234,7 @@ function App() {
               <StepSidebar
                 currentStep={currentStep}
                 infoContent={STEP_INFO[currentStep]}
+                onStepChange={handleStepChange}
               />
             </div>
           </div>
