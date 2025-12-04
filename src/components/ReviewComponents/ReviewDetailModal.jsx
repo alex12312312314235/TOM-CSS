@@ -142,8 +142,7 @@ function renderSectionContent(key, data) {
 }
 
 function ReviewDetailModal({ department, onClose, onApprove, onRequestRevision }) {
-  const [revisionComment, setRevisionComment] = useState('');
-  const [showRevisionForm, setShowRevisionForm] = useState(false);
+  const [reviewComment, setReviewComment] = useState('');
 
   const sectionStatus = getTOMSectionStatus(department.tomData);
   const sectionKeys = Object.keys(SECTION_NAMES);
@@ -166,16 +165,16 @@ function ReviewDetailModal({ department, onClose, onApprove, onRequestRevision }
 
   const handleApprove = () => {
     if (confirm('Are you sure you want to approve this TOM submission?')) {
-      onApprove(department);
+      onApprove(department, reviewComment.trim() || null);
     }
   };
 
   const handleRequestRevision = () => {
-    if (!revisionComment.trim()) {
+    if (!reviewComment.trim()) {
       alert('Please provide feedback explaining what needs to be revised.');
       return;
     }
-    onRequestRevision(department, revisionComment);
+    onRequestRevision(department, reviewComment);
   };
 
   return (
@@ -272,25 +271,23 @@ function ReviewDetailModal({ department, onClose, onApprove, onRequestRevision }
             </div>
           )}
 
-          {/* Revision Comment Form */}
-          {showRevisionForm && (
-            <div className="mt-6 pt-6 border-t border-gray-200">
-              <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                <MessageSquare className="w-5 h-5 text-ekfc-red" />
-                Request Revision
-              </h3>
-              <textarea
-                value={revisionComment}
-                onChange={(e) => setRevisionComment(e.target.value)}
-                placeholder="Explain what needs to be revised or improved..."
-                rows={4}
-                className="w-full p-3 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-ekfc-red focus:border-ekfc-red"
-              />
-              <p className="text-xs text-gray-500 mt-2">
-                This feedback will be sent to the submitter so they can make improvements.
-              </p>
-            </div>
-          )}
+          {/* Review Comment - Always Visible */}
+          <div className="mt-6 pt-6 border-t border-gray-200">
+            <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+              <MessageSquare className="w-5 h-5 text-ekfc-red" />
+              Add Review Comment
+            </h3>
+            <textarea
+              value={reviewComment}
+              onChange={(e) => setReviewComment(e.target.value)}
+              placeholder="Add your feedback, suggestions, or notes about this TOM submission..."
+              rows={4}
+              className="w-full p-3 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-ekfc-red focus:border-ekfc-red"
+            />
+            <p className="text-xs text-gray-500 mt-2">
+              This comment will be saved with your review decision (required for revision requests, optional for approvals).
+            </p>
+          </div>
         </div>
 
         {/* Modal Footer */}
@@ -304,44 +301,22 @@ function ReviewDetailModal({ department, onClose, onApprove, onRequestRevision }
             </button>
 
             <div className="flex items-center gap-3">
-              {!showRevisionForm ? (
-                <>
-                  <button
-                    onClick={() => setShowRevisionForm(true)}
-                    className="flex items-center gap-2 px-4 py-2 border border-red-300 text-red-700 rounded-lg font-medium hover:bg-red-50 transition-colors"
-                  >
-                    <XCircle className="w-4 h-4" />
-                    Request Revision
-                  </button>
-                  <button
-                    onClick={handleApprove}
-                    className="flex items-center gap-2 px-6 py-2 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors"
-                  >
-                    <CheckCircle className="w-4 h-4" />
-                    Approve TOM
-                  </button>
-                </>
-              ) : (
-                <>
-                  <button
-                    onClick={() => {
-                      setShowRevisionForm(false);
-                      setRevisionComment('');
-                    }}
-                    className="px-4 py-2 text-gray-600 hover:text-gray-900 transition-colors"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    onClick={handleRequestRevision}
-                    disabled={!revisionComment.trim()}
-                    className="flex items-center gap-2 px-6 py-2 bg-ekfc-red text-white rounded-lg font-medium hover:bg-ekfc-darkred transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    <MessageSquare className="w-4 h-4" />
-                    Send Revision Request
-                  </button>
-                </>
-              )}
+              <button
+                onClick={handleRequestRevision}
+                disabled={!reviewComment.trim()}
+                className="flex items-center gap-2 px-4 py-2 border border-red-300 text-red-700 rounded-lg font-medium hover:bg-red-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                title={!reviewComment.trim() ? 'Comment required for revision request' : ''}
+              >
+                <XCircle className="w-4 h-4" />
+                Request Revision
+              </button>
+              <button
+                onClick={handleApprove}
+                className="flex items-center gap-2 px-6 py-2 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors"
+              >
+                <CheckCircle className="w-4 h-4" />
+                Approve TOM
+              </button>
             </div>
           </div>
         </div>
