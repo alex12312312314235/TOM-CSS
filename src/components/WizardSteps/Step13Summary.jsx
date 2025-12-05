@@ -21,9 +21,9 @@ export default function Step13Summary({ data }) {
   };
 
   const getRAGColor = (status) => {
-    if (status === 'green') return 'text-green-600 bg-green-50';
-    if (status === 'amber') return 'text-amber-600 bg-amber-50';
-    return 'text-red-600 bg-red-50';
+    if (status === 'green') return 'text-green-600 bg-green-50 border-green-200';
+    if (status === 'amber') return 'text-ekfc-gold bg-amber-50 border-ekfc-gold/30';
+    return 'text-ekfc-red bg-red-50 border-ekfc-red/30';
   };
 
   const getRAGIcon = (status) => {
@@ -31,6 +31,11 @@ export default function Step13Summary({ data }) {
     if (status === 'amber') return <AlertTriangle className="w-5 h-5" />;
     return <AlertCircle className="w-5 h-5" />;
   };
+
+  const ragCounts = Object.values(sectionRAG).reduce((acc, status) => {
+    acc[status] = (acc[status] || 0) + 1;
+    return acc;
+  }, {});
 
   return (
     <div className="space-y-6">
@@ -41,27 +46,43 @@ export default function Step13Summary({ data }) {
         </p>
       </div>
 
-      {/* COMPLETENESS SCORE */}
-      <div className="card bg-gradient-to-br from-primary-50 to-white">
-        <div className="flex items-center justify-between">
+      {/* COMPLETENESS SCORE WITH MINI DASHBOARD */}
+      <div className="card bg-gradient-to-br from-red-50 via-orange-50 to-amber-50 border-ekfc-gold/30">
+        <div className="flex items-center justify-between mb-6">
           <div>
             <h3 className="text-lg font-semibold text-gray-900 mb-2">Overall Completeness</h3>
             <p className="text-sm text-gray-600">How much of your TOM is filled in</p>
           </div>
           <div className="text-center">
-            <div className="text-5xl font-bold text-primary-600">{completeness}%</div>
+            <div className="text-5xl font-bold text-ekfc-red">{completeness}%</div>
             {completeness >= 80 && <p className="text-sm text-green-600 font-medium mt-1">Excellent!</p>}
-            {completeness >= 50 && completeness < 80 && <p className="text-sm text-amber-600 font-medium mt-1">Good progress</p>}
-            {completeness < 50 && <p className="text-sm text-red-600 font-medium mt-1">Keep going</p>}
+            {completeness >= 50 && completeness < 80 && <p className="text-sm text-ekfc-gold font-medium mt-1">Good progress</p>}
+            {completeness < 50 && <p className="text-sm text-ekfc-red font-medium mt-1">Keep going</p>}
           </div>
         </div>
 
         {/* Progress Bar */}
-        <div className="mt-4 w-full bg-gray-200 rounded-full h-3">
+        <div className="mb-4 w-full bg-gray-200 rounded-full h-3">
           <div
-            className="bg-primary-600 h-3 rounded-full transition-all"
+            className="bg-gradient-to-r from-ekfc-red to-ekfc-gold h-3 rounded-full transition-all"
             style={{ width: `${completeness}%` }}
           />
+        </div>
+
+        {/* Mini Dashboard - RAG Badges */}
+        <div className="flex items-center justify-center gap-4 pt-4 border-t border-gray-300">
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-green-500"></div>
+            <span className="text-sm font-medium text-gray-700">Complete: {ragCounts.green || 0}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-ekfc-gold"></div>
+            <span className="text-sm font-medium text-gray-700">Partial: {ragCounts.amber || 0}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-ekfc-red"></div>
+            <span className="text-sm font-medium text-gray-700">Missing: {ragCounts.red || 0}</span>
+          </div>
         </div>
       </div>
 
@@ -88,7 +109,7 @@ export default function Step13Summary({ data }) {
             return (
               <div
                 key={key}
-                className={`flex items-center gap-3 p-3 rounded-lg ${getRAGColor(status)}`}
+                className={`flex items-center gap-3 p-3 rounded-lg border ${getRAGColor(status)}`}
               >
                 {getRAGIcon(status)}
                 <span className="font-medium">{labels[key]}</span>
@@ -100,13 +121,13 @@ export default function Step13Summary({ data }) {
 
       {/* MISSING OR INCOMPLETE */}
       {missingSections.length > 0 && (
-        <div className="card bg-amber-50 border-amber-200">
+        <div className="card bg-amber-50 border-ekfc-gold/30">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">What's Missing or Incomplete</h3>
           <div className="space-y-3">
             {missingSections.map((item, index) => (
               <div key={index} className="flex items-start gap-3">
                 <AlertCircle className={`w-5 h-5 flex-shrink-0 mt-0.5 ${
-                  item.severity === 'critical' ? 'text-red-500' : 'text-amber-500'
+                  item.severity === 'critical' ? 'text-ekfc-red' : 'text-ekfc-gold'
                 }`} />
                 <div>
                   <p className="font-medium text-gray-900">{item.section}</p>
@@ -125,7 +146,7 @@ export default function Step13Summary({ data }) {
           <ul className="space-y-2">
             {recommendations.map((rec, index) => (
               <li key={index} className="flex items-start gap-2">
-                <span className="text-blue-600 font-bold">→</span>
+                <span className="text-ekfc-red font-bold">→</span>
                 <span className="text-gray-800">{rec}</span>
               </li>
             ))}
