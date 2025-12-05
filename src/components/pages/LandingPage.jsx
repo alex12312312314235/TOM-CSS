@@ -1,5 +1,5 @@
 import React from 'react';
-import { FileText, ClipboardCheck, LayoutDashboard, ArrowRight, Users, Shield, BarChart3 } from 'lucide-react';
+import { FileText, ClipboardCheck, Eye, ArrowRight, Users, Shield, BarChart3, FolderOpen } from 'lucide-react';
 
 const ROLE_CARDS = [
   {
@@ -10,6 +10,15 @@ const ROLE_CARDS = [
     icon: FileText,
     color: 'bg-blue-500',
     features: ['13-step guided wizard', 'Auto-save progress', 'Export to JSON/Markdown']
+  },
+  {
+    id: 'my-submissions',
+    title: 'My Submissions',
+    subtitle: 'Track Your Progress',
+    description: 'View your submission status, read reviewer feedback, and resubmit if changes are requested.',
+    icon: FolderOpen,
+    color: 'bg-purple-500',
+    features: ['Track submission status', 'Read reviewer feedback', 'Edit & resubmit if needed']
   },
   {
     id: 'auditor',
@@ -23,9 +32,9 @@ const ROLE_CARDS = [
   {
     id: 'vp-dashboard',
     title: 'VP Dashboard',
-    subtitle: 'Division Leadership',
+    subtitle: 'Division Leadership (View Only)',
     description: 'View all departments at a glance. Track TOM completion status across your division.',
-    icon: LayoutDashboard,
+    icon: Eye,
     color: 'bg-green-600',
     features: ['Division overview', 'Section completion status', 'Export reports to PDF']
   }

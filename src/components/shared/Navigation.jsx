@@ -1,11 +1,12 @@
 import React from 'react';
-import { Home, ClipboardCheck, LayoutDashboard, FileText } from 'lucide-react';
+import { Home, ClipboardCheck, LayoutDashboard, FileText, FolderOpen, Eye } from 'lucide-react';
 
 const NAV_ITEMS = [
   { id: 'landing', label: 'Home', icon: Home },
   { id: 'wizard', label: 'Build TOM', icon: FileText },
+  { id: 'my-submissions', label: 'My Submissions', icon: FolderOpen },
   { id: 'auditor', label: 'Review Queue', icon: ClipboardCheck },
-  { id: 'vp-dashboard', label: 'VP Dashboard', icon: LayoutDashboard }
+  { id: 'vp-dashboard', label: 'VP Dashboard', icon: Eye }
 ];
 
 function Navigation({ currentView, onNavigate, showBackToWizard = false }) {

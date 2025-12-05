@@ -1,9 +1,9 @@
 import React, { useState, useMemo } from 'react';
-import { LayoutGrid, List, Search, Download, Filter, RefreshCw, ChevronDown, X } from 'lucide-react';
+import { LayoutGrid, List, Search, Download, Filter, ChevronDown, X, Eye } from 'lucide-react';
 import DepartmentCard from '../DashboardComponents/DepartmentCard';
 import DepartmentTable from '../DashboardComponents/DepartmentTable';
 import DepartmentDetailModal from '../DashboardComponents/DepartmentDetailModal';
-import { MOCK_DEPARTMENTS, STATUS_LABELS, SECTION_NAMES, getTOMSectionStatus } from '../../data/mockDepartments';
+import { MOCK_DEPARTMENTS, STATUS_LABELS } from '../../data/mockDepartments';
 
 function VPDashboard({ departments = MOCK_DEPARTMENTS, onExportPDF }) {
   const [viewMode, setViewMode] = useState('cards'); // 'cards' or 'table'
@@ -11,7 +11,6 @@ function VPDashboard({ departments = MOCK_DEPARTMENTS, onExportPDF }) {
   const [filterDivision, setFilterDivision] = useState('all');
   const [filterStatus, setFilterStatus] = useState('all');
   const [selectedDepartment, setSelectedDepartment] = useState(null);
-  const [dismissedIds, setDismissedIds] = useState([]);
 
   // Get unique divisions for filter
   const divisions = useMemo(() => {
@@ -22,9 +21,6 @@ function VPDashboard({ departments = MOCK_DEPARTMENTS, onExportPDF }) {
   // Filter departments
   const filteredDepartments = useMemo(() => {
     return departments.filter(dept => {
-      // Exclude dismissed
-      if (dismissedIds.includes(dept.id)) return false;
-
       // Search filter
       if (searchTerm) {
         const term = searchTerm.toLowerCase();
@@ -46,28 +42,19 @@ function VPDashboard({ departments = MOCK_DEPARTMENTS, onExportPDF }) {
 
       return true;
     });
-  }, [departments, searchTerm, filterDivision, filterStatus, dismissedIds]);
+  }, [departments, searchTerm, filterDivision, filterStatus]);
 
   // Calculate summary stats
   const stats = useMemo(() => {
-    const all = departments.filter(d => !dismissedIds.includes(d.id));
     return {
-      total: all.length,
-      approved: all.filter(d => d.workflowStatus === 'approved').length,
-      pending: all.filter(d => d.workflowStatus === 'submitted' || d.workflowStatus === 'under_review').length,
-      draft: all.filter(d => d.workflowStatus === 'draft').length,
-      needsRevision: all.filter(d => d.workflowStatus === 'needs_revision').length,
-      avgCompleteness: Math.round(all.reduce((sum, d) => sum + d.completeness, 0) / all.length) || 0
+      total: departments.length,
+      approved: departments.filter(d => d.workflowStatus === 'approved').length,
+      pending: departments.filter(d => d.workflowStatus === 'submitted' || d.workflowStatus === 'under_review').length,
+      draft: departments.filter(d => d.workflowStatus === 'draft').length,
+      needsRevision: departments.filter(d => d.workflowStatus === 'needs_revision').length,
+      avgCompleteness: Math.round(departments.reduce((sum, d) => sum + d.completeness, 0) / departments.length) || 0
     };
-  }, [departments, dismissedIds]);
-
-  const handleDismiss = (id) => {
-    setDismissedIds(prev => [...prev, id]);
-  };
-
-  const handleResetDismissed = () => {
-    setDismissedIds([]);
-  };
+  }, [departments]);
 
   const handleViewDetails = (department) => {
     setSelectedDepartment(department);
@@ -77,7 +64,6 @@ function VPDashboard({ departments = MOCK_DEPARTMENTS, onExportPDF }) {
     if (onExportPDF) {
       onExportPDF(filteredDepartments);
     } else {
-      // Fallback: print-based PDF
       window.print();
     }
   };
@@ -89,8 +75,12 @@ function VPDashboard({ departments = MOCK_DEPARTMENTS, onExportPDF }) {
         <div className="max-w-7xl mx-auto px-6 py-6">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Division Dashboard</h1>
-              <p className="text-gray-600">All departments and TOM status at a glance</p>
+              <div className="flex items-center gap-2">
+                <Eye className="w-6 h-6 text-ekfc-red" />
+                <h1 className="text-2xl font-bold text-gray-900">VP Dashboard</h1>
+                <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-medium">View Only</span>
+              </div>
+              <p className="text-gray-600 mt-1">All CSS departments and TOM status at a glance</p>
             </div>
 
             {/* Summary Stats */}
@@ -184,16 +174,6 @@ function VPDashboard({ departments = MOCK_DEPARTMENTS, onExportPDF }) {
 
             {/* Right: View Toggle & Actions */}
             <div className="flex items-center gap-3">
-              {dismissedIds.length > 0 && (
-                <button
-                  onClick={handleResetDismissed}
-                  className="flex items-center gap-1 text-sm text-gray-600 hover:text-ekfc-red"
-                >
-                  <RefreshCw className="w-4 h-4" />
-                  Show dismissed ({dismissedIds.length})
-                </button>
-              )}
-
               {/* View Toggle */}
               <div className="flex items-center bg-gray-100 rounded-lg p-1">
                 <button
@@ -248,7 +228,6 @@ function VPDashboard({ departments = MOCK_DEPARTMENTS, onExportPDF }) {
                 key={dept.id}
                 department={dept}
                 onViewDetails={handleViewDetails}
-                onDismiss={handleDismiss}
               />
             ))}
           </div>
@@ -275,7 +254,6 @@ function VPDashboard({ departments = MOCK_DEPARTMENTS, onExportPDF }) {
                 setSearchTerm('');
                 setFilterDivision('all');
                 setFilterStatus('all');
-                setDismissedIds([]);
               }}
               className="text-ekfc-red hover:underline"
             >

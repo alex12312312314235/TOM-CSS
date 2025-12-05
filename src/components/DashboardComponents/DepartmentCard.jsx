@@ -1,6 +1,6 @@
 import React from 'react';
-import { ArrowRight, X } from 'lucide-react';
-import { SECTION_NAMES, getTOMSectionStatus, STATUS_LABELS, STATUS_COLORS } from '../../data/mockDepartments';
+import { ArrowRight, Eye } from 'lucide-react';
+import { SECTION_NAMES, getTOMSectionStatus, STATUS_LABELS } from '../../data/mockDepartments';
 
 // RAG Status Dot Component
 function StatusDot({ status, label }) {
@@ -50,7 +50,7 @@ function WorkflowBadge({ status }) {
   );
 }
 
-function DepartmentCard({ department, onViewDetails, onDismiss }) {
+function DepartmentCard({ department, onViewDetails }) {
   const sectionStatus = getTOMSectionStatus(department.tomData);
   const sectionKeys = Object.keys(SECTION_NAMES);
 
@@ -64,22 +64,11 @@ function DepartmentCard({ department, onViewDetails, onDismiss }) {
   return (
     <div className="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow">
       {/* Card Header */}
-      <div className="px-5 py-4 border-b border-gray-100 flex items-start justify-between">
-        <div className="flex-1 min-w-0">
-          <h3 className="font-bold text-gray-900 truncate" title={department.name}>
-            {department.name}
-          </h3>
-          <p className="text-sm text-gray-500">{department.division}</p>
-        </div>
-        {onDismiss && (
-          <button
-            onClick={() => onDismiss(department.id)}
-            className="text-gray-400 hover:text-gray-600 p-1 -mr-1 -mt-1"
-            title="Dismiss"
-          >
-            <X className="w-4 h-4" />
-          </button>
-        )}
+      <div className="px-5 py-4 border-b border-gray-100">
+        <h3 className="font-bold text-gray-900 truncate" title={department.name}>
+          {department.name}
+        </h3>
+        <p className="text-sm text-gray-500">{department.division}</p>
       </div>
 
       {/* Status Badge & Completeness */}
@@ -148,8 +137,8 @@ function DepartmentCard({ department, onViewDetails, onDismiss }) {
           onClick={() => onViewDetails(department)}
           className="w-full flex items-center justify-center gap-2 py-2.5 bg-ekfc-red text-white rounded-lg font-medium hover:bg-ekfc-darkred transition-colors"
         >
+          <Eye className="w-4 h-4" />
           View Details
-          <ArrowRight className="w-4 h-4" />
         </button>
       </div>
     </div>

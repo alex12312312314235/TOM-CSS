@@ -22,6 +22,7 @@ import Step13Summary from './components/WizardSteps/Step13Summary';
 import LandingPage from './components/pages/LandingPage';
 import VPDashboard from './components/pages/VPDashboard';
 import AuditorDashboard from './components/pages/AuditorDashboard';
+import MySubmissions from './components/pages/MySubmissions';
 
 // Import data and utilities
 import { MOCK_DEPARTMENTS } from './data/mockDepartments';
@@ -79,7 +80,7 @@ const getInitialTOMData = () => ({
 
 function App() {
   // Navigation state
-  const [currentView, setCurrentView] = useState('landing'); // 'landing' | 'wizard' | 'vp-dashboard' | 'auditor'
+  const [currentView, setCurrentView] = useState('landing'); // 'landing' | 'wizard' | 'vp-dashboard' | 'auditor' | 'my-submissions'
 
   // Wizard state
   const [currentStep, setCurrentStep] = useState(1);
@@ -279,6 +280,19 @@ function App() {
         <AuditorDashboard
           departments={departments}
           onUpdateStatus={handleUpdateDepartmentStatus}
+        />
+      </div>
+    );
+  }
+
+  // Render My Submissions
+  if (currentView === 'my-submissions') {
+    return (
+      <div className="min-h-screen bg-ekfc-cream">
+        <Navigation currentView={currentView} onNavigate={handleNavigate} />
+        <MySubmissions
+          departments={departments}
+          onNavigate={handleNavigate}
         />
       </div>
     );
