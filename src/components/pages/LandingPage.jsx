@@ -65,7 +65,7 @@ function LandingPage({ onNavigate }) {
         <h2 className="text-2xl font-bold text-gray-800 mb-2">Select Your Role</h2>
         <p className="text-gray-600 mb-8">Choose the view that matches your role in the TOM process</p>
 
-        <div className="grid md:grid-cols-3 gap-6">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
           {ROLE_CARDS.map(card => {
             const Icon = card.icon;
             return (

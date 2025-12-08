@@ -38,16 +38,16 @@ function AuditorDashboard({ departments = MOCK_DEPARTMENTS, onUpdateStatus }) {
     };
   }, [departments]);
 
-  const handleApprove = (department) => {
+  const handleApprove = (department, comment, sectionComments) => {
     if (onUpdateStatus) {
-      onUpdateStatus(department.id, 'approved');
+      onUpdateStatus(department.id, 'approved', comment, sectionComments);
     }
     setSelectedSubmission(null);
   };
 
-  const handleRequestRevision = (department, comment) => {
+  const handleRequestRevision = (department, comment, sectionComments) => {
     if (onUpdateStatus) {
-      onUpdateStatus(department.id, 'needs_revision', comment);
+      onUpdateStatus(department.id, 'needs_revision', comment, sectionComments);
     }
     setSelectedSubmission(null);
   };

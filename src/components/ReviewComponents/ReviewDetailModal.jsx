@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { X, CheckCircle, XCircle, AlertCircle, Clock, ChevronDown, ChevronUp, MessageSquare } from 'lucide-react';
+import { X, CheckCircle, XCircle, AlertCircle, Clock, ChevronDown, ChevronUp, MessageSquare, Edit2 } from 'lucide-react';
 import { SECTION_NAMES, getTOMSectionStatus } from '../../data/mockDepartments';
 
-// Section detail viewer
-function SectionDetail({ title, status, children, defaultOpen = false }) {
+// Section detail viewer with comment field
+function SectionDetail({ title, status, sectionKey, comment, onCommentChange, children, defaultOpen = false }) {
   const [isOpen, setIsOpen] = useState(defaultOpen);
 
   const statusConfig = {
@@ -14,6 +14,7 @@ function SectionDetail({ title, status, children, defaultOpen = false }) {
 
   const config = statusConfig[status];
   const StatusIcon = config.icon;
+  const hasComment = comment && comment.trim().length > 0;
 
   return (
     <div className={`border rounded-lg ${config.border} overflow-hidden`}>
@@ -24,6 +25,12 @@ function SectionDetail({ title, status, children, defaultOpen = false }) {
         <div className="flex items-center gap-2">
           <StatusIcon className={`w-5 h-5 ${config.color}`} />
           <span className="font-medium text-gray-800">{title}</span>
+          {hasComment && (
+            <span className="flex items-center gap-1 text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">
+              <Edit2 className="w-3 h-3" />
+              Comment
+            </span>
+          )}
         </div>
         {isOpen ? (
           <ChevronUp className="w-5 h-5 text-gray-500" />
@@ -32,8 +39,23 @@ function SectionDetail({ title, status, children, defaultOpen = false }) {
         )}
       </button>
       {isOpen && (
-        <div className="p-4 bg-white border-t border-gray-100">
-          {children}
+        <div className="bg-white border-t border-gray-100">
+          <div className="p-4">
+            {children}
+          </div>
+          {/* Section-level comment */}
+          <div className="px-4 pb-4 pt-2 border-t border-gray-100">
+            <label className="block text-xs font-medium text-gray-500 mb-1">
+              Reviewer Comment for this Section
+            </label>
+            <textarea
+              value={comment || ''}
+              onChange={(e) => onCommentChange(sectionKey, e.target.value)}
+              placeholder={`Add feedback for "${title}"...`}
+              rows={2}
+              className="w-full p-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-ekfc-red focus:border-ekfc-red"
+            />
+          </div>
         </div>
       )}
     </div>
@@ -143,9 +165,20 @@ function renderSectionContent(key, data) {
 
 function ReviewDetailModal({ department, onClose, onApprove, onRequestRevision }) {
   const [reviewComment, setReviewComment] = useState('');
+  const [sectionComments, setSectionComments] = useState({});
 
   const sectionStatus = getTOMSectionStatus(department.tomData);
   const sectionKeys = Object.keys(SECTION_NAMES);
+
+  const handleSectionCommentChange = (sectionKey, value) => {
+    setSectionComments(prev => ({
+      ...prev,
+      [sectionKey]: value
+    }));
+  };
+
+  // Check if there are any section comments
+  const hasSectionComments = Object.values(sectionComments).some(c => c && c.trim().length > 0);
 
   // Map section keys to tomData keys
   const dataKeyMap = {
@@ -165,16 +198,16 @@ function ReviewDetailModal({ department, onClose, onApprove, onRequestRevision }
 
   const handleApprove = () => {
     if (confirm('Are you sure you want to approve this TOM submission?')) {
-      onApprove(department, reviewComment.trim() || null);
+      onApprove(department, reviewComment.trim() || null, hasSectionComments ? sectionComments : null);
     }
   };
 
   const handleRequestRevision = () => {
-    if (!reviewComment.trim()) {
-      alert('Please provide feedback explaining what needs to be revised.');
+    if (!reviewComment.trim() && !hasSectionComments) {
+      alert('Please provide feedback explaining what needs to be revised (either overall comment or section-specific comments).');
       return;
     }
-    onRequestRevision(department, reviewComment);
+    onRequestRevision(department, reviewComment || 'See section-specific feedback below.', sectionComments);
   };
 
   return (
@@ -241,8 +274,11 @@ function ReviewDetailModal({ department, onClose, onApprove, onRequestRevision }
               return (
                 <SectionDetail
                   key={key}
+                  sectionKey={key}
                   title={`${index + 1}. ${SECTION_NAMES[key]}`}
                   status={sectionStatus[key]}
+                  comment={sectionComments[key]}
+                  onCommentChange={handleSectionCommentChange}
                   defaultOpen={index === 0}
                 >
                   {renderSectionContent(key, data)}
@@ -275,18 +311,25 @@ function ReviewDetailModal({ department, onClose, onApprove, onRequestRevision }
           <div className="mt-6 pt-6 border-t border-gray-200">
             <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
               <MessageSquare className="w-5 h-5 text-ekfc-red" />
-              Add Review Comment
+              Overall Review Comment
             </h3>
             <textarea
               value={reviewComment}
               onChange={(e) => setReviewComment(e.target.value)}
-              placeholder="Add your feedback, suggestions, or notes about this TOM submission..."
-              rows={4}
+              placeholder="Add overall feedback, summary, or general notes about this TOM submission..."
+              rows={3}
               className="w-full p-3 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-ekfc-red focus:border-ekfc-red"
             />
-            <p className="text-xs text-gray-500 mt-2">
-              This comment will be saved with your review decision (required for revision requests, optional for approvals).
-            </p>
+            <div className="flex items-center justify-between mt-2">
+              <p className="text-xs text-gray-500">
+                Use section-specific comments above for detailed feedback, or this field for overall summary.
+              </p>
+              {hasSectionComments && (
+                <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">
+                  {Object.values(sectionComments).filter(c => c && c.trim()).length} section comment(s)
+                </span>
+              )}
+            </div>
           </div>
         </div>
 
@@ -303,9 +346,9 @@ function ReviewDetailModal({ department, onClose, onApprove, onRequestRevision }
             <div className="flex items-center gap-3">
               <button
                 onClick={handleRequestRevision}
-                disabled={!reviewComment.trim()}
+                disabled={!reviewComment.trim() && !hasSectionComments}
                 className="flex items-center gap-2 px-4 py-2 border border-red-300 text-red-700 rounded-lg font-medium hover:bg-red-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                title={!reviewComment.trim() ? 'Comment required for revision request' : ''}
+                title={!reviewComment.trim() && !hasSectionComments ? 'Add overall or section comments before requesting revision' : ''}
               >
                 <XCircle className="w-4 h-4" />
                 Request Revision
