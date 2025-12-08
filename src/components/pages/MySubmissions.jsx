@@ -159,7 +159,28 @@ function MySubmissions({ tomData, onEditTOM, onNavigateToWizard }) {
                   <div className="flex-1">
                     <h3 className="font-semibold text-red-900 mb-1">Reviewer Feedback</h3>
                     <p className="text-red-800 mb-3">{latestReview.comment}</p>
-                    <div className="flex items-center gap-4 text-sm text-red-600">
+
+                    {/* Section-specific feedback */}
+                    {latestReview.sectionComments && Object.keys(latestReview.sectionComments).filter(k => latestReview.sectionComments[k]?.trim()).length > 0 && (
+                      <div className="mt-4 pt-4 border-t border-red-200">
+                        <h4 className="text-sm font-medium text-red-900 mb-2">Section-Specific Feedback:</h4>
+                        <div className="space-y-2">
+                          {Object.entries(latestReview.sectionComments)
+                            .filter(([_, comment]) => comment?.trim())
+                            .map(([key, comment]) => (
+                              <div key={key} className="bg-red-100/50 rounded-lg p-3">
+                                <div className="text-xs font-medium text-red-700 mb-1">
+                                  {SECTION_NAMES[key] || key}:
+                                </div>
+                                <p className="text-sm text-red-800">{comment}</p>
+                              </div>
+                            ))
+                          }
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="flex items-center gap-4 text-sm text-red-600 mt-3">
                       <span>From: {latestReview.reviewerName}</span>
                       <span>|</span>
                       <span>{new Date(latestReview.createdAt).toLocaleDateString()}</span>

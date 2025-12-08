@@ -168,21 +168,79 @@ function App() {
     if (!submitterName) return;
 
     if (confirm('Submit this TOM for review? You can still make edits after submission.')) {
-      setTomData(prev => ({
-        ...prev,
+      const submittedAt = new Date().toISOString();
+      const workflowId = tomData.workflow?.id || `tom-${Date.now()}`;
+
+      // Update local TOM data
+      const updatedTomData = {
+        ...tomData,
         workflow: {
-          ...prev.workflow,
+          ...tomData.workflow,
+          id: workflowId,
           status: 'submitted',
-          submittedAt: new Date().toISOString(),
+          submittedAt: submittedAt,
           submittedBy: { name: submitterName, email: '' }
         }
-      }));
-      alert('TOM submitted for review successfully!');
+      };
+      setTomData(updatedTomData);
+
+      // Add/update in departments list so it appears in review queue
+      setDepartments(prev => {
+        const existingIndex = prev.findIndex(d => d.id === workflowId);
+        const newDept = {
+          id: workflowId,
+          name: tomData.department.name,
+          division: tomData.department.division || 'User Submission',
+          headcount: tomData.department.headcount || 0,
+          workflowStatus: 'submitted',
+          submittedAt: submittedAt,
+          submittedBy: submitterName,
+          completeness: calculateCompleteness(tomData),
+          lastUpdated: submittedAt,
+          tomData: updatedTomData
+        };
+
+        if (existingIndex >= 0) {
+          // Update existing
+          const updated = [...prev];
+          updated[existingIndex] = newDept;
+          return updated;
+        } else {
+          // Add new
+          return [...prev, newDept];
+        }
+      });
+
+      alert('TOM submitted for review successfully! You can track its status in "My Submissions".');
     }
   };
 
+  // Calculate completeness percentage
+  const calculateCompleteness = (data) => {
+    const sections = ['department', 'purpose', 'serviceCatalogue', 'stakeholders', 'valueChain', 'slas', 'kpis', 'raci', 'governance', 'dependencies', 'risks', 'opportunities'];
+    let complete = 0;
+    sections.forEach(key => {
+      const val = data[key];
+      if (val) {
+        if (Array.isArray(val) && val.length > 0) complete++;
+        else if (typeof val === 'object' && Object.values(val).some(v => v && v.length > 0)) complete++;
+      }
+    });
+    return Math.round((complete / 12) * 100);
+  };
+
   // Update department status (for auditor actions)
-  const handleUpdateDepartmentStatus = (deptId, newStatus, comment = null) => {
+  const handleUpdateDepartmentStatus = (deptId, newStatus, comment = null, sectionComments = null) => {
+    const reviewEntry = {
+      id: `rev-${Date.now()}`,
+      reviewerName: 'OpEx Reviewer',
+      reviewerRole: 'auditor',
+      comment: comment || '',
+      sectionComments: sectionComments || {},
+      status: newStatus === 'approved' ? 'approved' : 'request_change',
+      createdAt: new Date().toISOString()
+    };
+
     setDepartments(prev => prev.map(dept => {
       if (dept.id !== deptId) return dept;
 
@@ -192,27 +250,38 @@ function App() {
         lastUpdated: new Date().toISOString()
       };
 
-      // Add review comment if provided
-      if (comment && dept.tomData) {
+      // Add review to tomData
+      if (dept.tomData) {
         updated.tomData = {
           ...dept.tomData,
+          workflow: {
+            ...dept.tomData.workflow,
+            status: newStatus
+          },
           reviews: [
             ...(dept.tomData.reviews || []),
-            {
-              id: `rev-${Date.now()}`,
-              reviewerName: 'OpEx Reviewer', // In production, this would be the actual user
-              reviewerRole: 'auditor',
-              comment: comment,
-              section: 'overall',
-              status: newStatus === 'approved' ? 'approved' : 'request_change',
-              createdAt: new Date().toISOString()
-            }
+            reviewEntry
           ]
         };
       }
 
       return updated;
     }));
+
+    // Also sync to user's local TOM if this is their submission
+    if (tomData.workflow?.id === deptId) {
+      setTomData(prev => ({
+        ...prev,
+        workflow: {
+          ...prev.workflow,
+          status: newStatus
+        },
+        reviews: [
+          ...(prev.reviews || []),
+          reviewEntry
+        ]
+      }));
+    }
   };
 
   // PDF Export handler
@@ -291,8 +360,8 @@ function App() {
       <div className="min-h-screen bg-ekfc-cream">
         <Navigation currentView={currentView} onNavigate={handleNavigate} />
         <MySubmissions
-          departments={departments}
-          onNavigate={handleNavigate}
+          tomData={tomData}
+          onNavigateToWizard={() => handleNavigate('wizard')}
         />
       </div>
     );
