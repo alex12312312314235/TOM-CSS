@@ -1,6 +1,15 @@
 import React, { useState } from 'react';
-import { ArrowLeft, ArrowRight, Building2, Users, Rocket, Plus, X, Check, Mail, User } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Building2, Users, Rocket, Plus, X, Check, User } from 'lucide-react';
 import { SECTION_NAMES } from '../../data/mockDepartments';
+
+// CSS Departments (Culinary Shared Services)
+const CSS_DEPARTMENTS = [
+  { id: 'ii', name: 'I&I', fullName: 'Innovation & Improvement' },
+  { id: 'hd', name: 'H&D', fullName: 'Hospitality & Design' },
+  { id: 'ss', name: 'S&S', fullName: 'Systems & Support' },
+  { id: 'cdr', name: 'CD&R', fullName: 'Capability Development & Resources' },
+  { id: 'ft', name: 'FT', fullName: 'Food Technology' },
+];
 
 // Simulated team members for prototype
 const AVAILABLE_TEAM_MEMBERS = [
@@ -20,10 +29,9 @@ function ProjectSetupWizard({ onComplete, onCancel }) {
   const [step, setStep] = useState(1);
 
   // Step 1: Department info
-  const [departmentName, setDepartmentName] = useState('');
-  const [division, setDivision] = useState('CSS');
-  const [hodName, setHodName] = useState('');
-  const [hodEmail, setHodEmail] = useState('');
+  const [selectedDepartment, setSelectedDepartment] = useState('');
+  const [projectName, setProjectName] = useState('');
+  const [tomOwner, setTomOwner] = useState('');
 
   // Step 2: Team members
   const [teamMembers, setTeamMembers] = useState([]);
@@ -65,9 +73,13 @@ function ProjectSetupWizard({ onComplete, onCancel }) {
     });
   };
 
+  const getDepartmentInfo = () => {
+    return CSS_DEPARTMENTS.find(d => d.id === selectedDepartment);
+  };
+
   const handleNext = () => {
-    if (step === 1 && (!departmentName || !hodName)) {
-      alert('Please fill in department name and HOD name');
+    if (step === 1 && (!selectedDepartment || !tomOwner)) {
+      alert('Please select a department and enter TOM Owner name');
       return;
     }
     if (step < 3) setStep(step + 1);
@@ -78,24 +90,28 @@ function ProjectSetupWizard({ onComplete, onCancel }) {
   };
 
   const handleLaunch = () => {
+    const deptInfo = getDepartmentInfo();
     const projectData = {
       id: `project-${Date.now()}`,
       department: {
-        name: departmentName,
-        division: division,
+        id: selectedDepartment,
+        name: deptInfo?.name || selectedDepartment,
+        fullName: deptInfo?.fullName || '',
+        division: 'CSS - Culinary Shared Services',
       },
+      projectName: projectName || `${deptInfo?.name} TOM Project`,
       hod: {
-        name: hodName,
-        email: hodEmail,
+        name: tomOwner,
+        email: '',
       },
       teamMembers: teamMembers,
       sectionAssignments: sectionAssignments,
       activityLog: [{
         id: `act-${Date.now()}`,
         type: 'project_created',
-        message: `Project created by ${hodName}`,
+        message: `Project created by ${tomOwner}`,
         timestamp: new Date().toISOString(),
-        user: hodName
+        user: tomOwner
       }],
       createdAt: new Date().toISOString(),
       status: 'in_progress'
@@ -157,71 +173,63 @@ function ProjectSetupWizard({ onComplete, onCancel }) {
           {step === 1 && (
             <div className="space-y-6">
               <div>
-                <h2 className="text-xl font-bold text-gray-900 mb-1">Department Information</h2>
-                <p className="text-gray-600">Basic details about your department</p>
+                <h2 className="text-xl font-bold text-gray-900 mb-1">Project Setup</h2>
+                <p className="text-gray-600">Select your CSS department and project details</p>
               </div>
 
-              <div className="grid md:grid-cols-2 gap-6">
+              <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Department Name *
+                    CSS Department *
+                  </label>
+                  <select
+                    value={selectedDepartment}
+                    onChange={(e) => setSelectedDepartment(e.target.value)}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ekfc-red focus:border-ekfc-red"
+                  >
+                    <option value="">Select your department...</option>
+                    {CSS_DEPARTMENTS.map(dept => (
+                      <option key={dept.id} value={dept.id}>
+                        {dept.name} - {dept.fullName}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Project Name <span className="text-gray-400 font-normal">(optional)</span>
                   </label>
                   <input
                     type="text"
-                    value={departmentName}
-                    onChange={(e) => setDepartmentName(e.target.value)}
-                    placeholder="e.g., Food Technology"
+                    value={projectName}
+                    onChange={(e) => setProjectName(e.target.value)}
+                    placeholder={selectedDepartment ? `${getDepartmentInfo()?.name} TOM Project` : 'e.g., FT TOM Project'}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ekfc-red focus:border-ekfc-red"
                   />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Division
+                    TOM Owner (HOD) *
                   </label>
-                  <select
-                    value={division}
-                    onChange={(e) => setDivision(e.target.value)}
+                  <input
+                    type="text"
+                    value={tomOwner}
+                    onChange={(e) => setTomOwner(e.target.value)}
+                    placeholder="Enter your name"
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ekfc-red focus:border-ekfc-red"
-                  >
-                    <option value="CSS">CSS - Customer Solutions & Support</option>
-                    <option value="Operations">Operations</option>
-                    <option value="Finance">Finance</option>
-                    <option value="HR">Human Resources</option>
-                  </select>
+                  />
+                  <p className="text-sm text-gray-500 mt-2">
+                    As TOM Owner, you will have full editing rights and the ability to submit the final TOM for OpEx review.
+                  </p>
                 </div>
               </div>
 
-              <div className="border-t border-gray-200 pt-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Head of Department (Project Owner)</h3>
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      HOD Name *
-                    </label>
-                    <input
-                      type="text"
-                      value={hodName}
-                      onChange={(e) => setHodName(e.target.value)}
-                      placeholder="Your full name"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ekfc-red focus:border-ekfc-red"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      HOD Email
-                    </label>
-                    <input
-                      type="email"
-                      value={hodEmail}
-                      onChange={(e) => setHodEmail(e.target.value)}
-                      placeholder="your.email@company.com"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ekfc-red focus:border-ekfc-red"
-                    />
-                  </div>
-                </div>
-                <p className="text-sm text-gray-500 mt-2">
-                  As HOD, you will have full editing rights and the ability to submit the final TOM for review.
+              {/* Division info - fixed */}
+              <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                <p className="text-sm text-gray-600">
+                  <span className="font-medium">Division:</span> CSS - Culinary Shared Services
                 </p>
               </div>
             </div>
@@ -357,12 +365,13 @@ function ProjectSetupWizard({ onComplete, onCancel }) {
                 <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
                   <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
                     <Building2 className="w-5 h-5 text-ekfc-red" />
-                    Department
+                    Project Details
                   </h3>
                   <div className="space-y-2 text-sm">
-                    <p><span className="text-gray-500">Name:</span> <strong>{departmentName}</strong></p>
-                    <p><span className="text-gray-500">Division:</span> {division}</p>
-                    <p><span className="text-gray-500">HOD:</span> {hodName}</p>
+                    <p><span className="text-gray-500">Department:</span> <strong>{getDepartmentInfo()?.name}</strong> - {getDepartmentInfo()?.fullName}</p>
+                    <p><span className="text-gray-500">Project:</span> {projectName || `${getDepartmentInfo()?.name} TOM Project`}</p>
+                    <p><span className="text-gray-500">TOM Owner:</span> {tomOwner}</p>
+                    <p><span className="text-gray-500">Division:</span> CSS - Culinary Shared Services</p>
                   </div>
                 </div>
 
@@ -372,7 +381,7 @@ function ProjectSetupWizard({ onComplete, onCancel }) {
                     Team
                   </h3>
                   <div className="text-sm">
-                    <p><span className="text-gray-500">Members:</span> <strong>{teamMembers.length}</strong> (+ HOD)</p>
+                    <p><span className="text-gray-500">Members:</span> <strong>{teamMembers.length}</strong> (+ TOM Owner)</p>
                     <p><span className="text-gray-500">With edit access:</span> {teamMembers.filter(m => m.permission === 'edit').length}</p>
                     <p><span className="text-gray-500">Sections assigned:</span> {Object.values(sectionAssignments).filter(Boolean).length} of 12</p>
                   </div>
@@ -403,7 +412,7 @@ function ProjectSetupWizard({ onComplete, onCancel }) {
                 <h3 className="font-semibold text-green-900 mb-2">Ready to Launch</h3>
                 <p className="text-sm text-green-800">
                   Once launched, your team can start working on their assigned sections.
-                  As HOD, you can monitor progress, edit any section, and submit the final TOM for OpEx review.
+                  As TOM Owner, you can monitor progress, edit any section, and submit the final TOM for OpEx review.
                 </p>
               </div>
             </div>

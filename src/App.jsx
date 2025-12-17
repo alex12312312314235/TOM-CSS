@@ -332,6 +332,20 @@ function App() {
     exportDivisionToPDF(depts || departments);
   };
 
+  // Reset demo - clear all data
+  const handleResetDemo = () => {
+    if (confirm('Reset all demo data? This will clear your project, TOM data, and all submissions.')) {
+      localStorage.removeItem('tomProject');
+      localStorage.removeItem('tomBuilderData');
+      setProject(null);
+      setTomData(getInitialTOMData());
+      setDepartments(MOCK_DEPARTMENTS);
+      setCurrentStep(1);
+      setCurrentView('landing');
+      alert('Demo reset complete! You can start fresh.');
+    }
+  };
+
   // Project creation handler
   const handleProjectCreate = (projectData) => {
     const newProject = {
@@ -470,7 +484,7 @@ function App() {
 
   // Render Landing Page (no navigation header)
   if (currentView === 'landing') {
-    return <LandingPage onNavigate={handleNavigate} hasProject={!!project} />;
+    return <LandingPage onNavigate={handleNavigate} hasProject={!!project} onResetDemo={handleResetDemo} />;
   }
 
   // Render Project Setup Wizard
