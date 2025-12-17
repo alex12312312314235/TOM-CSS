@@ -4,10 +4,10 @@ import { SECTION_NAMES } from '../../data/mockDepartments';
 
 // CSS Departments (Culinary Shared Services)
 const CSS_DEPARTMENTS = [
-  { id: 'ii', name: 'I&I', fullName: 'Innovation & Improvement' },
-  { id: 'hd', name: 'H&D', fullName: 'Hospitality & Design' },
-  { id: 'ss', name: 'S&S', fullName: 'Systems & Support' },
-  { id: 'cdr', name: 'CD&R', fullName: 'Capability Development & Resources' },
+  { id: 'ii', name: 'I&I', fullName: 'Insights & Intelligence' },
+  { id: 'hd', name: 'H&D', fullName: 'Health & Dietetics' },
+  { id: 'ss', name: 'S&S', fullName: 'Standards & Specifications' },
+  { id: 'cdr', name: 'CD&R', fullName: 'Concept Development & Research' },
   { id: 'ft', name: 'FT', fullName: 'Food Technology' },
 ];
 
