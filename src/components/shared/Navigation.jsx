@@ -1,11 +1,11 @@
 import React from 'react';
-import { Home, ClipboardCheck, LayoutDashboard, FileText, FolderOpen, Eye } from 'lucide-react';
+import { Home, ClipboardCheck, FileText, FolderOpen, Eye, Users } from 'lucide-react';
 
 const NAV_ITEMS = [
   { id: 'landing', label: 'Home', icon: Home },
-  { id: 'wizard', label: 'Build TOM', icon: FileText },
-  { id: 'my-submissions', label: 'My Submissions', icon: FolderOpen },
-  { id: 'auditor', label: 'Review Queue', icon: ClipboardCheck },
+  { id: 'project-dashboard', label: 'My Project', icon: Users },
+  { id: 'wizard', label: 'TOM Builder', icon: FileText },
+  { id: 'auditor', label: 'OpEx Review', icon: ClipboardCheck },
   { id: 'vp-dashboard', label: 'VP Dashboard', icon: Eye }
 ];
 

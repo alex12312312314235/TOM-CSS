@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { LayoutGrid, List, Search, Download, Filter, ChevronDown, X, Eye } from 'lucide-react';
 import DepartmentCard from '../DashboardComponents/DepartmentCard';
 import DepartmentTable from '../DashboardComponents/DepartmentTable';
-import DepartmentDetailModal from '../DashboardComponents/DepartmentDetailModal';
+import TOMDetailModal from '../DashboardComponents/TOMDetailModal';
 import { MOCK_DEPARTMENTS, STATUS_LABELS } from '../../data/mockDepartments';
 
 function VPDashboard({ departments = MOCK_DEPARTMENTS, onExportPDF }) {
@@ -289,9 +289,9 @@ function VPDashboard({ departments = MOCK_DEPARTMENTS, onExportPDF }) {
         </div>
       </div>
 
-      {/* Department Detail Modal */}
+      {/* TOM Detail Modal - Full drill-down view */}
       {selectedDepartment && (
-        <DepartmentDetailModal
+        <TOMDetailModal
           department={selectedDepartment}
           onClose={() => setSelectedDepartment(null)}
         />

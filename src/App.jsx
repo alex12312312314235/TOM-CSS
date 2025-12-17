@@ -22,6 +22,8 @@ import Step13Summary from './components/WizardSteps/Step13Summary';
 import LandingPage from './components/pages/LandingPage';
 import VPDashboard from './components/pages/VPDashboard';
 import AuditorDashboard from './components/pages/AuditorDashboard';
+import ProjectSetupWizard from './components/pages/ProjectSetupWizard';
+import ProjectDashboard from './components/pages/ProjectDashboard';
 import MySubmissions from './components/pages/MySubmissions';
 
 // Import data and utilities
@@ -88,6 +90,28 @@ function App() {
 
   // Mock departments state (for demo - in production this would come from API)
   const [departments, setDepartments] = useState(MOCK_DEPARTMENTS);
+
+  // Project state (for team collaboration)
+  const [project, setProject] = useState(null);
+
+  // Load project from localStorage
+  useEffect(() => {
+    const savedProject = localStorage.getItem('tomProject');
+    if (savedProject) {
+      try {
+        setProject(JSON.parse(savedProject));
+      } catch (e) {
+        console.error('Error loading project:', e);
+      }
+    }
+  }, []);
+
+  // Save project to localStorage
+  useEffect(() => {
+    if (project) {
+      localStorage.setItem('tomProject', JSON.stringify(project));
+    }
+  }, [project]);
 
   // Auto-save TOM data to localStorage
   useEffect(() => {
@@ -282,11 +306,132 @@ function App() {
         ]
       }));
     }
+
+    // Sync to project if this is the project's submission
+    if (project?.id === deptId) {
+      setProject(prev => ({
+        ...prev,
+        status: newStatus,
+        activityLog: [
+          ...(prev.activityLog || []),
+          {
+            id: `act-${Date.now()}`,
+            type: newStatus === 'approved' ? 'approved' : 'revision_requested',
+            message: newStatus === 'approved'
+              ? 'TOM approved by OpEx'
+              : `OpEx requested revisions: ${comment || 'See section comments'}`,
+            timestamp: new Date().toISOString()
+          }
+        ]
+      }));
+    }
   };
 
   // PDF Export handler
   const handleExportPDF = (depts) => {
     exportDivisionToPDF(depts || departments);
+  };
+
+  // Project creation handler
+  const handleProjectCreate = (projectData) => {
+    const newProject = {
+      ...projectData,
+      id: `proj-${Date.now()}`,
+      createdAt: new Date().toISOString(),
+      status: 'in_progress',
+      activityLog: [
+        {
+          id: `act-${Date.now()}`,
+          type: 'project_created',
+          message: `Project created by ${projectData.hod.name}`,
+          timestamp: new Date().toISOString()
+        }
+      ]
+    };
+    setProject(newProject);
+
+    // Initialize TOM data with project department info
+    setTomData(prev => ({
+      ...prev,
+      department: {
+        name: projectData.department.name,
+        division: projectData.department.division,
+        headcount: projectData.teamMembers.length + 1
+      }
+    }));
+
+    handleNavigate('project-dashboard');
+  };
+
+  // Add activity to project
+  const addProjectActivity = (message) => {
+    if (!project) return;
+    setProject(prev => ({
+      ...prev,
+      activityLog: [
+        ...(prev.activityLog || []),
+        {
+          id: `act-${Date.now()}`,
+          type: 'activity',
+          message,
+          timestamp: new Date().toISOString()
+        }
+      ]
+    }));
+  };
+
+  // Submit project to OpEx review
+  const handleProjectSubmitToOpEx = () => {
+    if (!project) return;
+
+    const submittedAt = new Date().toISOString();
+
+    // Update project status
+    setProject(prev => ({
+      ...prev,
+      status: 'submitted',
+      submittedAt
+    }));
+
+    // Add to activity log
+    addProjectActivity(`TOM submitted for OpEx review by ${project.hod.name}`);
+
+    // Update TOM workflow
+    setTomData(prev => ({
+      ...prev,
+      workflow: {
+        ...prev.workflow,
+        status: 'submitted',
+        submittedAt,
+        submittedBy: project.hod
+      }
+    }));
+
+    // Add to departments list for OpEx review queue
+    const newDept = {
+      id: project.id,
+      name: project.department.name,
+      division: project.department.division,
+      headcount: project.teamMembers.length + 1,
+      workflowStatus: 'submitted',
+      submittedAt,
+      submittedBy: project.hod.name,
+      completeness: calculateCompleteness(tomData),
+      lastUpdated: submittedAt,
+      tomData: tomData
+    };
+
+    setDepartments(prev => {
+      const existingIndex = prev.findIndex(d => d.id === project.id);
+      if (existingIndex >= 0) {
+        const updated = [...prev];
+        updated[existingIndex] = newDept;
+        return updated;
+      }
+      return [...prev, newDept];
+    });
+
+    alert('TOM submitted to OpEx for review!');
   };
 
   // Render wizard step
@@ -325,7 +470,37 @@ function App() {
 
   // Render Landing Page (no navigation header)
   if (currentView === 'landing') {
-    return <LandingPage onNavigate={handleNavigate} />;
+    return <LandingPage onNavigate={handleNavigate} hasProject={!!project} />;
+  }
+
+  // Render Project Setup Wizard
+  if (currentView === 'project-setup') {
+    return (
+      <div className="min-h-screen bg-ekfc-cream">
+        <Navigation currentView={currentView} onNavigate={handleNavigate} />
+        <ProjectSetupWizard
+          onComplete={handleProjectCreate}
+          onCancel={() => handleNavigate('landing')}
+        />
+      </div>
+    );
+  }
+
+  // Render Project Dashboard
+  if (currentView === 'project-dashboard') {
+    return (
+      <div className="min-h-screen bg-ekfc-cream">
+        <Navigation currentView={currentView} onNavigate={handleNavigate} />
+        <ProjectDashboard
+          project={project}
+          tomData={tomData}
+          currentUser="hod"
+          onEnterBuilder={() => handleNavigate('wizard')}
+          onSubmitForReview={handleProjectSubmitToOpEx}
+          onNavigateHome={() => handleNavigate('landing')}
+        />
+      </div>
+    );
   }
 
   // Render VP Dashboard
