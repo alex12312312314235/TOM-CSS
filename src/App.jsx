@@ -24,7 +24,6 @@ import VPDashboard from './components/pages/VPDashboard';
 import AuditorDashboard from './components/pages/AuditorDashboard';
 import ProjectSetupWizard from './components/pages/ProjectSetupWizard';
 import ProjectDashboard from './components/pages/ProjectDashboard';
-import MySubmissions from './components/pages/MySubmissions';
 
 // Import data and utilities
 import { MOCK_DEPARTMENTS } from './data/mockDepartments';
@@ -82,7 +81,7 @@ const getInitialTOMData = () => ({
 
 function App() {
   // Navigation state
-  const [currentView, setCurrentView] = useState('landing'); // 'landing' | 'wizard' | 'vp-dashboard' | 'auditor' | 'my-submissions'
+  const [currentView, setCurrentView] = useState('landing'); // 'landing' | 'project-setup' | 'project-dashboard' | 'wizard' | 'auditor' | 'vp-dashboard'
 
   // Wizard state
   const [currentStep, setCurrentStep] = useState(1);
@@ -538,19 +537,6 @@ function App() {
         <AuditorDashboard
           departments={departments}
           onUpdateStatus={handleUpdateDepartmentStatus}
-        />
-      </div>
-    );
-  }
-
-  // Render My Submissions
-  if (currentView === 'my-submissions') {
-    return (
-      <div className="min-h-screen bg-ekfc-cream">
-        <Navigation currentView={currentView} onNavigate={handleNavigate} />
-        <MySubmissions
-          tomData={tomData}
-          onNavigateToWizard={() => handleNavigate('wizard')}
         />
       </div>
     );

@@ -138,13 +138,13 @@ function ProjectSetupWizard({ onComplete, onCancel }) {
       {/* Progress Steps */}
       <div className="bg-white border-b border-gray-200 shadow-sm">
         <div className="max-w-4xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-center">
             {[
               { num: 1, label: 'Department', icon: Building2 },
               { num: 2, label: 'Team', icon: Users },
               { num: 3, label: 'Launch', icon: Rocket }
             ].map((s, idx) => (
-              <div key={s.num} className="flex items-center">
+              <React.Fragment key={s.num}>
                 <div className={`flex items-center gap-2 px-4 py-2 rounded-lg ${
                   step === s.num ? 'bg-ekfc-red text-white' :
                   step > s.num ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'
@@ -157,9 +157,9 @@ function ProjectSetupWizard({ onComplete, onCancel }) {
                   <span className="font-medium">{s.label}</span>
                 </div>
                 {idx < 2 && (
-                  <div className={`w-16 h-1 mx-2 rounded ${step > s.num ? 'bg-green-400' : 'bg-gray-200'}`} />
+                  <div className={`w-12 h-0.5 mx-1 ${step > s.num ? 'bg-green-400' : 'bg-gray-300'}`} />
                 )}
-              </div>
+              </React.Fragment>
             ))}
           </div>
         </div>
