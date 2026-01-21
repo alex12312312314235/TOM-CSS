@@ -1,95 +1,100 @@
-# TOM Builder Excel - Quick Start (5 Minutes)
+# TOM Builder Excel - Quick Start
 
-## Step 1: Create the Workbook
+## Setup (3 Minutes)
+
+### Step 1: Create the File
 1. Open Excel
-2. Save as **TOM_Builder.xlsm** (Excel Macro-Enabled Workbook)
+2. Save as **TOM_Builder.xlsm** (Macro-Enabled Workbook)
 
-## Step 2: Import the VBA Code
-1. Press **Alt+F11** (opens VBA Editor)
+### Step 2: Import the Code
+1. Press **Alt+F11** (VBA Editor)
 2. Click **Insert > Module**
-3. Open `TOM_Builder_VBA.bas` in Notepad
-4. Copy ALL the code and paste it into the module
-5. Press **Ctrl+S** to save
-6. Close the VBA Editor (Alt+Q)
+3. Copy ALL code from `TOM_Builder_VBA.bas` and paste
+4. Press **Ctrl+S** to save
+5. Close VBA Editor (**Alt+Q**)
 
-## Step 3: Run the Setup
-1. Press **Alt+F8** (opens Macro dialog)
-2. Select **SetupWorkbook** and click **Run**
-3. Wait for "Workbook setup complete!" message
+### Step 3: Run Setup
+1. Press **Alt+F8**
+2. Select **SetupTOMBuilder**
+3. Click **Run**
+4. Done! All sheets created with styling.
 
-**That's it! Your TOM Builder is ready.**
+---
+
+## Features
+
+| Feature | Description |
+|---------|-------------|
+| No gridlines | Clean, professional look |
+| Color-coded headers | Blue theme throughout |
+| Dropdown lists | All categorical fields pre-configured |
+| Auto-scoring | Dashboard calculates completeness |
+| RAG status | Red/Amber/Green for each section |
+| Conditional formatting | Status cells change color |
+| Helper text | Guidance on every sheet |
+| Markdown export | Generate TOM document |
 
 ---
 
 ## How to Use
 
-### Fill Out Your TOM
-- Click each sheet tab (1_Department, 2_Purpose, etc.)
-- Fill in the fields - dropdowns are pre-configured
-- Required fields marked with *
-
-### Check Your Progress
-- Go to **Dashboard** sheet
-- See RAG status (Red/Amber/Green) for each section
-- Total score shown at bottom
-
-### Export Your TOM
-1. Press **Alt+F8**
-2. Run **ExportToMarkdown**
-3. Choose save location
-4. Get a professional markdown document
+1. **Start with 1_Department** - Enter your team info
+2. **Work through each sheet** - Follow the step numbers
+3. **Check Dashboard** - See your progress
+4. **Export when ready** - Run `ExportToMarkdown`
 
 ---
 
-## Key Macros (Alt+F8)
+## Available Macros (Alt+F8)
 
-| Macro | What it does |
+| Macro | What It Does |
 |-------|--------------|
-| `SetupWorkbook` | Creates all sheets (run once) |
+| `SetupTOMBuilder` | Creates all sheets (run once) |
 | `RefreshDashboard` | Recalculates scores |
-| `ValidateAllData` | Shows missing required fields |
 | `ExportToMarkdown` | Saves TOM as .md file |
 
 ---
 
-## SharePoint Tips
+## Section Scoring
 
-1. **Save directly to SharePoint** - File > Save As > SharePoint location
-2. **Enable editing** - When opening from SharePoint, click "Edit Workbook"
-3. **Macros may need enabling** - Accept the security prompt
-4. **Version history** - SharePoint auto-tracks all versions
+| Section | Weight | GREEN When |
+|---------|--------|------------|
+| Department | 10% | Name filled |
+| Purpose | 10% | Statement + Vision or Mission |
+| Services | 10% | 3+ services |
+| Stakeholders | 10% | 3+ stakeholders |
+| Value Chain | 15% | All 3 parts filled |
+| SLAs | 10% | 2+ SLAs |
+| KPIs | 10% | 3+ KPIs |
+| RACI | 10% | 3+ entries |
+| Governance | 5% | Forum + Escalation path |
+| Dependencies | 5% | 2+ dependencies |
+| Risks | 5% | 2+ risks |
+| Opportunities | 5% | 2+ opportunities |
+
+---
+
+## SharePoint Deployment
+
+1. Save .xlsm to SharePoint document library
+2. Share the library with your team
+3. Each person downloads a copy to fill out
+4. Completed TOMs can be stored back in SharePoint
+
+**Note:** Macros run locally - SharePoint just stores the file.
 
 ---
 
 ## Troubleshooting
 
-**"Macros disabled" warning?**
-- Click "Enable Content" in the yellow bar
-- Or: File > Options > Trust Center > Trust Center Settings > Enable all macros
+**Macros disabled?**
+- Click "Enable Content" in the yellow security bar
+- Or: File > Options > Trust Center > Enable Macros
+
+**Dropdowns not working?**
+- Make sure you ran SetupTOMBuilder first
+- The _Lookups sheet must exist (it's hidden)
 
 **Scores not updating?**
-- Press Ctrl+Alt+F9 to force recalculation
-- Or run RefreshDashboard macro
-
-**Can't see dropdown lists?**
-- Make sure you ran SetupWorkbook first
-- Check that _Lookups sheet exists (it's hidden)
-
----
-
-## Section Targets for GREEN Status
-
-| Section | Target |
-|---------|--------|
-| Department | Name filled |
-| Purpose | Statement filled |
-| Services | 3+ services |
-| Stakeholders | 3+ stakeholders |
-| Value Chain | All 3 parts (inputs, activities, outputs) |
-| SLAs | 2+ SLAs |
-| KPIs | 3+ KPIs |
-| RACI | 3+ entries |
-| Governance | 1+ forum + escalation path |
-| Dependencies | 2+ dependencies |
-| Risks | 2+ risks |
-| Opportunities | 2+ opportunities |
+- Press **Ctrl+Alt+F9** to force recalculation
+- Or run **RefreshDashboard** macro
